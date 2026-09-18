@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#6D28D9">
+  <meta name="description" content="ระบบยืม–คืนครุภัณฑ์และอุปกรณ์ของโรงเรียน">
+  <title>ระบบยืม–คืนครุภัณฑ์</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+  <div id="loadingOverlay" class="loading-overlay hidden" aria-live="polite" aria-busy="true">
+    <div class="spinner"></div>
+    <p id="loadingText">กำลังประมวลผล...</p>
+  </div>
+
+  <section id="setupNotice" class="setup-notice hidden">
+    <div class="setup-card">
+      <div class="setup-icon">⚙️</div>
+      <h1>ยังไม่ได้เชื่อมต่อระบบหลังบ้าน</h1>
+      <p>กรุณานำ URL ของ Google Apps Script Web App ไปใส่ในไฟล์ <code>assets/js/config.js</code> แล้วอัปโหลดขึ้น GitHub ใหม่</p>
+      <a href="README.html" class="btn btn-primary">เปิดคู่มือติดตั้ง</a>
+    </div>
+  </section>
+
+  <section id="loginView" class="login-view hidden">
+    <div class="login-visual">
+      <div class="login-glow"></div>
+      <div class="brand-panel">
+        <div id="loginLogo" class="brand-logo logo-placeholder">รท.1</div>
+        <p class="eyebrow">ASSET &amp; EQUIPMENT CENTER</p>
+        <h1 id="loginSystemName">ระบบยืม–คืนครุภัณฑ์และอุปกรณ์ของโรงเรียน</h1>
+        <p id="loginSchoolName">โรงเรียนรวมไทยพัฒนา 1</p>
+        <div class="feature-chips">
+          <span>QR / Barcode</span><span>ยืม–คืน</span><span>ตรวจนับ</span><span>รายงาน</span>
+        </div>
+      </div>
+    </div>
+    <div class="login-form-wrap">
+      <form id="loginForm" class="login-card" autocomplete="on">
+        <div class="mobile-brand">
+          <div class="brand-logo logo-placeholder">รท.1</div>
+          <strong id="mobileSchoolName">โรงเรียนรวมไทยพัฒนา 1</strong>
+        </div>
+        <p class="eyebrow text-primary">เข้าสู่ระบบ</p>
+        <h2>ยินดีต้อนรับ</h2>
+        <p class="muted">ใช้บัญชีที่ผู้ดูแลระบบสร้างให้</p>
+        <label class="field">
+          <span>ชื่อผู้ใช้</span>
+          <input id="loginUsername" name="username" type="text" autocomplete="username" required placeholder="กรอกชื่อผู้ใช้">
+        </label>
+        <label class="field">
+          <span>รหัสผ่าน</span>
+          <div class="password-field">
+            <input id="loginPassword" name="password" type="password" autocomplete="current-password" required placeholder="กรอกรหัสผ่าน">
+            <button type="button" class="icon-btn" data-toggle-password="#loginPassword" aria-label="แสดงหรือซ่อนรหัสผ่าน">◉</button>
+          </div>
+        </label>
+        <div id="loginError" class="form-error hidden"></div>
+        <button class="btn btn-primary btn-block btn-lg" type="submit">เข้าสู่ระบบ</button>
+        <p class="login-help">ลืมรหัสผ่าน กรุณาติดต่อผู้ดูแลระบบ</p>
+        <p id="loginFooter" class="login-footer">เรียนดี มีวินัย ใฝ่คุณธรรม</p>
+      </form>
+    </div>
+  </section>
+
+  <div id="appView" class="app-shell hidden">
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-brand">
+        <div id="appLogo" class="brand-logo brand-logo-small logo-placeholder">รท.1</div>
+        <div>
+          <strong id="appSchoolName">โรงเรียนรวมไทยพัฒนา 1</strong>
+          <small>Asset Center</small>
+        </div>
+        <button id="closeSidebar" class="icon-btn sidebar-close" aria-label="ปิดเมนู">×</button>
+      </div>
+      <nav id="mainNav" class="main-nav" aria-label="เมนูหลัก"></nav>
+      <div class="sidebar-footer">
+        <div class="user-mini">
+          <div id="sidebarAvatar" class="avatar">ผ</div>
+          <div><strong id="sidebarUserName">ผู้ใช้งาน</strong><small id="sidebarUserRole">-</small></div>
+        </div>
+        <button id="logoutButton" class="btn btn-ghost btn-block">ออกจากระบบ</button>
+      </div>
+    </aside>
+    <div id="sidebarBackdrop" class="sidebar-backdrop hidden"></div>
+
+    <div class="main-column">
+      <header class="topbar">
+        <button id="menuButton" class="icon-btn menu-button" aria-label="เปิดเมนู">☰</button>
+        <div class="page-heading">
+          <p id="pageEyebrow" class="eyebrow text-primary">ภาพรวม</p>
+          <h1 id="pageTitle">หน้าหลัก</h1>
+        </div>
+        <div class="topbar-actions">
+          <button id="scanQuickButton" class="btn btn-soft">▣ <span>สแกน</span></button>
+          <button id="notificationButton" class="icon-btn notification-button" aria-label="การแจ้งเตือน">
+            🔔<span id="notificationBadge" class="badge-count hidden">0</span>
+          </button>
+          <div class="topbar-user">
+            <div id="topbarAvatar" class="avatar">ผ</div>
+            <div><strong id="topbarUserName">ผู้ใช้งาน</strong><small id="topbarUserPosition">-</small></div>
+          </div>
+        </div>
+      </header>
+      <main id="pageContent" class="page-content" tabindex="-1"></main>
+      <footer id="appFooter" class="app-footer">เรียนดี มีวินัย ใฝ่คุณธรรม</footer>
+    </div>
+  </div>
+
+  <div id="modalRoot"></div>
+  <div id="toastRoot" class="toast-root" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/utils.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
